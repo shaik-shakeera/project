@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Tasks</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f8f9fa;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    li {
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    input[type="checkbox"] {
+      transform: scale(1.3);
+    }
+
+    button {
+      padding: 8px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .update-btn {
+      background: #007bff;
+      color: white;
+      position: relative;
+    }
+
+    .update-btn:hover {
+      background: #0056b3;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background: #c82333;
+    }
+
+    a {
+      margin-top: 20px;
+      text-decoration: none;
+      color: #007bff;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🛠️ Edit Your Tasks</h1>
+  <ul id="edit-list"></ul>
+  <a href="task_list.html">← Back to To-Do</a>
+
+  <script>
+    const editList = document.getElementById('edit-list');
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+    function renderTasks() {
+      editList.innerHTML = '';
+      tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = task.completed;
+        checkbox.addEventListener('change', () => {
+          tasks[index].completed = checkbox.checked;
+          localStorage.setItem('tasks', JSON.stringify(tasks));
+        });
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = task.text;
+        if (task.completed) input.style.textDecoration = 'line-through';
+
+        const updateBtn = document.createElement('button');
+        updateBtn.textContent = 'Update';
+        updateBtn.className = 'update-btn';
+        updateBtn.addEventListener('click', () => {
+          const newText = input.value.trim();
+          if (newText !== '') {
+            tasks[index].text = newText;
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            alert('Task updated!');
+            renderTasks();
+          }
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '🗑';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.addEventListener('click', () => {
+          tasks.splice(index, 1);
+          localStorage.setItem('tasks', JSON.stringify(tasks));
+          renderTasks();
+        });
+
+        li.appendChild(checkbox);
+        li.appendChild(input);
+        li.appendChild(updateBtn);
+        li.appendChild(deleteBtn);
+
+        editList.appendChild(li);
+      });
+    }
+
+    renderTasks();
+  </script>
+
+</body>
+</html>
